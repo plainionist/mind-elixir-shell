@@ -7,7 +7,6 @@
 <script setup lang="ts">
   import MindElixir from 'mind-elixir'
   import { onMounted, onUnmounted, ref } from 'vue'
-  import { softwareEngineering } from './sample-data'
   import { open, save } from '@tauri-apps/plugin-dialog'
   import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
   import { listen } from '@tauri-apps/api/event'
@@ -57,7 +56,9 @@
 
     me.value.mindElixirBox.requestFullscreen()
     me.value.toCenter()
-    me.value.init(softwareEngineering)
+
+    const data = MindElixir.new('New Topic')
+    me.value.init(data)
 
     unlisten = await getCurrentWindow().onCloseRequested(async () => {
       const home = await homeDir()

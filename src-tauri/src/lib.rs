@@ -1,6 +1,5 @@
 use tauri::menu::*;
 use tauri::Emitter;
-use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -22,7 +21,6 @@ pub fn run() {
             app.set_menu(menu)?;
 
             app.on_menu_event(move |app, event| {
-                println!("menu event: {:?}", event);
                 if event.id() == "open" {
                     app.emit("menu:open", {}).expect("Emit 'menu:open' failed");
                 } else if event.id() == "save" {
@@ -31,9 +29,6 @@ pub fn run() {
                     app.emit("menu:export-svg", {}).expect("Emit 'menu:export-svg' failed");
                 }
             });
-
-            let window = app.get_webview_window("main").unwrap();
-            window.open_devtools();
 
             Ok(())
         })
