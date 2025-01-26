@@ -7,18 +7,56 @@
 <script setup lang="ts">
   import MindElixir from 'mind-elixir'
   import { onMounted, ref } from 'vue'
-  import { softwareEngineering } from './sample-data'; 
+  import { softwareEngineering } from './sample-data'
+  import { open, save } from '@tauri-apps/plugin-dialog'
+  import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
+  import { listen } from '@tauri-apps/api/event'
 
   const me = ref()
+
+  const openFile = async () => {
+    const filePath = await open({
+      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+    })
+    if (filePath) {
+      const contents = await readTextFile(filePath as string)
+      me.value.init(JSON.parse(contents))
+    }
+  }
+
+  const saveFile = async () => {
+    const filePath = await save({
+      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+    })
+    if (filePath) {
+      const data = me.value.getDataString()
+      await writeTextFile(filePath, data)
+    }
+  }
+
+  const exportSvg = async () => {
+    const filePath = await save({
+      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+    })
+    if (filePath) {
+      const data = me.value.exportSvg()
+      await writeTextFile(filePath, data)
+    }
+  }
 
   onMounted(() => {
     me.value = new MindElixir({
       el: '#map',
-      direction: MindElixir.SIDE,
+      direction: MindElixir.SIDE
     })
+
     me.value.mindElixirBox.requestFullscreen()
     me.value.toCenter()
     me.value.init(softwareEngineering)
+
+    listen('menu:open', openFile)
+    listen('menu:save', saveFile)
+    listen('menu:export-svg', exportSvg)
   })
 </script>
 
