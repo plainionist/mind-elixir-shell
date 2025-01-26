@@ -12,9 +12,9 @@
   "app": {
     "windows": [
       {
-        "title": "mind-elixir-shell",
-        "width": 800,
-        "height": 600
+        "title": "Mind Elixir Shell",
+        "width": 1800,
+        "height": 1080
       }
     ],
     "security": {

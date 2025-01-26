@@ -14,6 +14,9 @@ importers:
       '@tauri-apps/plugin-opener':
         specifier: ^2
         version: 2.2.5
+      mind-elixir:
+        specifier: ^4.3.6
+        version: 4.3.6
       vue:
         specifier: ^3.5.13
         version: 3.5.13(typescript@5.6.3)
@@ -470,6 +473,9 @@ packages:
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
+  mind-elixir@4.3.6:
+    resolution: {integrity: sha512-6E9DT5vOYJ7DMDFXJlAnKU3Q6ekwBkR48Tjo6PchEcxJjPURJsiIASxtIeZCfvp8V39N4WyIa3Yt7Q/SFQkVfw==}
+
   minimatch@9.0.5:
     resolution: {integrity: sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==}
     engines: {node: '>=16 || 14 >=14.17'}
@@ -904,6 +910,8 @@ snapshots:
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  mind-elixir@4.3.6: {}
 
   minimatch@9.0.5:
     dependencies:
