@@ -6,27 +6,19 @@
 
 <script setup lang="ts">
   import MindElixir from 'mind-elixir'
-  import example from 'mind-elixir/example'
   import { onMounted, ref } from 'vue'
-
-  // let options = {
-  //   el: '#map'
-  // }
-
-  // let mind = new MindElixir(options)
-
-  // const data = MindElixir.new('new topic')
-  // mind.init(data)
+  import { softwareEngineering } from './sample-data'; 
 
   const me = ref()
 
   onMounted(() => {
     me.value = new MindElixir({
-      el: '#map'
+      el: '#map',
+      direction: MindElixir.SIDE,
     })
-    me.value.init(example)
     me.value.mindElixirBox.requestFullscreen()
     me.value.toCenter()
+    me.value.init(softwareEngineering)
   })
 </script>
 
