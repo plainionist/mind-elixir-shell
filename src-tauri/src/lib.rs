@@ -1,5 +1,6 @@
 use tauri::menu::*;
 use tauri::Emitter;
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -31,8 +32,8 @@ pub fn run() {
                 }
             });
 
-            // let window = app.get_webview_window("main").unwrap();
-            // window.open_devtools();
+            let window = app.get_webview_window("main").unwrap();
+            window.open_devtools();
 
             Ok(())
         })

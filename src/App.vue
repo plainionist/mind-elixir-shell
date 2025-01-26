@@ -6,11 +6,13 @@
 
 <script setup lang="ts">
   import MindElixir from 'mind-elixir'
-  import { onMounted, ref } from 'vue'
+  import { onMounted, onUnmounted, ref } from 'vue'
   import { softwareEngineering } from './sample-data'
   import { open, save } from '@tauri-apps/plugin-dialog'
   import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
   import { listen } from '@tauri-apps/api/event'
+  import { getCurrentWindow } from '@tauri-apps/api/window'
+  import { homeDir, join } from '@tauri-apps/api/path'
 
   const me = ref()
 
@@ -45,7 +47,9 @@
     }
   }
 
-  onMounted(() => {
+  let unlisten = () => {}
+
+  onMounted(async () => {
     me.value = new MindElixir({
       el: '#map',
       direction: MindElixir.SIDE
@@ -55,9 +59,20 @@
     me.value.toCenter()
     me.value.init(softwareEngineering)
 
+    unlisten = await getCurrentWindow().onCloseRequested(async () => {
+      const home = await homeDir()
+      const filePath = await join(home, 'mind-elixir.json');
+      const data = me.value.getDataString()
+      await writeTextFile(filePath, data)
+    })
+
     listen('menu:open', openFile)
     listen('menu:save', saveFile)
     listen('menu:export-svg', exportSvg)
+  })
+
+  onUnmounted(() => {
+    unlisten()
   })
 </script>
 
