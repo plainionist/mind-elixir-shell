@@ -36,11 +36,12 @@
 
   const exportSvg = async () => {
     const filePath = await save({
-      filters: [{ name: 'JSON Files', extensions: ['json'] }]
+      filters: [{ name: 'SVG Files', extensions: ['svg'] }]
     })
     if (filePath) {
       const data = me.value.exportSvg()
-      await writeTextFile(filePath, data)
+      const svg = await data.text()
+      await writeTextFile(filePath, svg)
     }
   }
 

@@ -32,8 +32,8 @@ pub fn run() {
                 }
             });
 
-            let window = app.get_webview_window("main").unwrap();
-            window.open_devtools();
+            // let window = app.get_webview_window("main").unwrap();
+            // window.open_devtools();
 
             Ok(())
         })
