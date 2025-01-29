@@ -12,6 +12,7 @@
   import { listen } from '@tauri-apps/api/event'
   import { getCurrentWindow } from '@tauri-apps/api/window'
   import { homeDir, join } from '@tauri-apps/api/path'
+  import { Sunset } from './themes'
 
   const me = ref()
 
@@ -51,7 +52,8 @@
   onMounted(async () => {
     me.value = new MindElixir({
       el: '#map',
-      direction: MindElixir.SIDE
+      direction: MindElixir.SIDE,
+      theme: Sunset
     })
 
     me.value.mindElixirBox.requestFullscreen()
