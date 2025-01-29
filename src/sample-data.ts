@@ -4,6 +4,7 @@ export const softwareEngineering: MindElixirData = {
   nodeData: {
     id: 'root',
     topic: 'Software Engineering',
+    hyperLink: 'https://en.wikipedia.org/wiki/Software_engineering',
     children: [
       {
         id: 'child-1',
@@ -35,7 +36,11 @@ export const softwareEngineering: MindElixirData = {
             id: 'child-2-2',
             topic: 'Architecture',
             children: [
-              { id: 'child-2-2-1', topic: 'Clean Architecture' },
+              {
+                id: 'child-2-2-1',
+                topic: 'Clean Architecture',
+                hyperLink: 'https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html'
+              },
               { id: 'child-2-2-2', topic: 'Pipes & Filters' }
             ]
           }
