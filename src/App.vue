@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-  import MindElixir from 'mind-elixir'
+  import MindElixir, { MindElixirInstance } from 'mind-elixir'
   import { onMounted, onUnmounted, ref } from 'vue'
   import { open, save } from '@tauri-apps/plugin-dialog'
   import { writeTextFile, readTextFile, watchImmediate } from '@tauri-apps/plugin-fs'
@@ -15,15 +15,17 @@
   import { homeDir, join } from '@tauri-apps/api/path'
   import { Sunset } from './themes'
   import DescriptionBox from './components/DescriptionBox.vue'
+  import { useDescription } from './composables/useDescription'
 
-  const me = ref()
-  const description = ref('')
+  const me = ref<MindElixirInstance | null>()
   let watchedFile = ref<string | null>(null)
   let unwatch: (() => void) | null = null
 
+  const { description, attachDescriptionListeners } = useDescription()
+
   const loadFile = async (filePath: string) => {
     const contents = await readTextFile(filePath)
-    me.value.init(JSON.parse(contents))
+    me.value?.init(JSON.parse(contents))
   }
 
   const openFile = async () => {
@@ -49,7 +51,7 @@
       filters: [{ name: 'JSON Files', extensions: ['json'] }]
     })
     if (filePath) {
-      const data = me.value.getDataString()
+      const data = me.value!.getDataString()
       await writeTextFile(filePath, data)
     }
   }
@@ -59,7 +61,7 @@
       filters: [{ name: 'SVG Files', extensions: ['svg'] }]
     })
     if (filePath) {
-      const data = me.value.exportSvg()
+      const data = me.value!.exportSvg()
       const svg = await data.text()
       await writeTextFile(filePath, svg)
     }
@@ -92,8 +94,6 @@
     }
   }
 
-  let scale = 1.0
-
   onMounted(async () => {
     me.value = new MindElixir({
       el: '#map',
@@ -101,23 +101,7 @@
       theme: Sunset
     })
 
-    me.value.bus.addListener('scale', (value: any) => {
-      scale = value > 1.0 ? value : 1.0
-    })
-
-    me.value.bus.addListener('selectNode', (node: any) => {
-      description.value = ''
-      if (!isCtrlPressed) {
-        return
-      }
-
-      description.value = node.description
-
-      const descriptionBox = document.getElementById('description')
-      if (descriptionBox) {
-        descriptionBox.style.fontSize = `${15 * scale}px`
-      }
-    })
+    attachDescriptionListeners(me.value)
 
     document.documentElement.requestFullscreen()
     updateCanvasSize()
@@ -132,8 +116,8 @@
     unlisten = await getCurrentWindow().onCloseRequested(async () => {
       const home = await homeDir()
       const filePath = await join(home, 'mind-elixir.json')
-      const data = me.value.getDataString()
-      await writeTextFile(filePath, data)
+      const data = me.value?.getDataString()
+      await writeTextFile(filePath, data!)
     })
 
     listen('menu:open', openFile)
