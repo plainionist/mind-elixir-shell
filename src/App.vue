@@ -1,9 +1,7 @@
 <template>
   <main class="container">
     <div id="map"></div>
-    <div v-show="description" id="description" class="description">
-      {{ description }}
-    </div>
+    <DescriptionBox :description="description" />
   </main>
 </template>
 
@@ -16,6 +14,7 @@
   import { getCurrentWindow } from '@tauri-apps/api/window'
   import { homeDir, join } from '@tauri-apps/api/path'
   import { Sunset } from './themes'
+  import DescriptionBox from './components/DescriptionBox.vue'
 
   const me = ref()
   const description = ref('')
@@ -178,22 +177,6 @@
     margin: 0;
     height: 1000px;
     width: 100%;
-  }
-
-  .description {
-    position: fixed !important;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(245, 245, 245, 0.95);
-    color: black;
-    padding: 20px 20px;
-    font-size: 18px;
-    border-radius: 10px;
-    max-width: 80%;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    z-index: 9999 !important;
   }
 
   @media (prefers-color-scheme: dark) {
