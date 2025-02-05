@@ -14,22 +14,12 @@
   import { useDescription } from './composables/useDescription'
   import { useSaveOnClose } from './composables/useSaveOnClose'
   import { useFileOperations } from './composables/useFileOperations'
+  import { useFullscreen } from './composables/useFullscreen'
 
   const me = ref<MindElixirInstance | null>(null)
 
   const descriptionBox = ref<ComponentPublicInstance | null>(null)
   const { description, attachDescriptionListeners } = useDescription(descriptionBox)
-
-  const updateCanvasSize = () => {
-    if (document.fullscreenElement) {
-      const map = document.getElementById('map')
-      if (map) {
-        const windowHeight = window.innerHeight
-        map.style.width = '100vw'
-        map.style.height = `${windowHeight}px`
-      }
-    }
-  }
 
   onMounted(async () => {
     me.value = new MindElixir({
@@ -40,18 +30,14 @@
 
     attachDescriptionListeners(me.value)
     useSaveOnClose(me.value)
-    const { openFile, saveFile, exportSvg } = useFileOperations(me.value)
 
-    document.documentElement.requestFullscreen()
-    updateCanvasSize()
-    window.addEventListener('resize', updateCanvasSize)
-    setInterval(updateCanvasSize, 100)
-
+    useFullscreen(me.value)
     me.value.toCenter()
 
     const data = MindElixir.new('New Topic')
     me.value.init(data)
 
+    const { openFile, saveFile, exportSvg } = useFileOperations(me.value)
     listen('menu:open', openFile)
     listen('menu:save', saveFile)
     listen('menu:export-svg', exportSvg)
