@@ -7,66 +7,18 @@
 
 <script setup lang="ts">
   import MindElixir, { MindElixirInstance } from 'mind-elixir'
-  import { ComponentPublicInstance, onMounted, onUnmounted, ref } from 'vue'
-  import { open, save } from '@tauri-apps/plugin-dialog'
-  import { writeTextFile, readTextFile, watchImmediate } from '@tauri-apps/plugin-fs'
+  import { ComponentPublicInstance, onMounted, ref } from 'vue'
   import { listen } from '@tauri-apps/api/event'
   import { Sunset } from './themes'
   import DescriptionBox from './components/DescriptionBox.vue'
   import { useDescription } from './composables/useDescription'
   import { useSaveOnClose } from './composables/useSaveOnClose'
-
+  import { useFileOperations } from './composables/useFileOperations'
 
   const me = ref<MindElixirInstance | null>(null)
-  let watchedFile = ref<string | null>(null)
-  let unwatch: (() => void) | null = null
 
   const descriptionBox = ref<ComponentPublicInstance | null>(null)
   const { description, attachDescriptionListeners } = useDescription(descriptionBox)
-
-  const loadFile = async (filePath: string) => {
-    const contents = await readTextFile(filePath)
-    me.value?.init(JSON.parse(contents))
-  }
-
-  const openFile = async () => {
-    const filePath = await open({
-      filters: [{ name: 'JSON Files', extensions: ['json'] }]
-    })
-    if (filePath) {
-      watchedFile.value = filePath as string
-      await loadFile(watchedFile.value)
-
-      if (unwatch) {
-        unwatch()
-      }
-
-      unwatch = await watchImmediate(watchedFile.value, async () => {
-        await loadFile(watchedFile.value as string)
-      })
-    }
-  }
-
-  const saveFile = async () => {
-    const filePath = await save({
-      filters: [{ name: 'JSON Files', extensions: ['json'] }]
-    })
-    if (filePath) {
-      const data = me.value!.getDataString()
-      await writeTextFile(filePath, data)
-    }
-  }
-
-  const exportSvg = async () => {
-    const filePath = await save({
-      filters: [{ name: 'SVG Files', extensions: ['svg'] }]
-    })
-    if (filePath) {
-      const data = me.value!.exportSvg()
-      const svg = await data.text()
-      await writeTextFile(filePath, svg)
-    }
-  }
 
   const updateCanvasSize = () => {
     if (document.fullscreenElement) {
@@ -88,6 +40,7 @@
 
     attachDescriptionListeners(me.value)
     useSaveOnClose(me.value)
+    const { openFile, saveFile, exportSvg } = useFileOperations(me.value)
 
     document.documentElement.requestFullscreen()
     updateCanvasSize()
@@ -102,12 +55,6 @@
     listen('menu:open', openFile)
     listen('menu:save', saveFile)
     listen('menu:export-svg', exportSvg)
-  })
-
-  onUnmounted(() => {
-    if (unwatch) {
-      unwatch()
-    }
   })
 </script>
 
