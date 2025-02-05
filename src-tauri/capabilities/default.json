@@ -8,9 +8,11 @@
     "opener:default",
     "dialog:default",
     "fs:default",
+    "fs:allow-app-read",
     "fs:allow-app-write",
     "fs:allow-home-write",
     "fs:allow-watch",
+    "fs:allow-unwatch",
     "core:window:allow-destroy"
   ]
 }

@@ -1,6 +1,9 @@
 <template>
   <main class="container">
     <div id="map"></div>
+    <div v-if="description" class="description">
+      {{ description }}
+    </div>
   </main>
 </template>
 
@@ -15,6 +18,7 @@
   import { Sunset } from './themes'
 
   const me = ref()
+  const description = ref('')
   let watchedFile = ref<string | null>(null)
   let unwatch: (() => void) | null = null
 
@@ -62,7 +66,32 @@
     }
   }
 
+  let isCtrlPressed = false
+
+  document.addEventListener('keydown', function (event) {
+    if (event.ctrlKey) {
+      isCtrlPressed = true
+    }
+  })
+
+  document.addEventListener('keyup', function (event) {
+    if (!event.ctrlKey) {
+      isCtrlPressed = false
+    }
+  })
+
   let unlisten = () => {}
+
+  const updateCanvasSize = () => {
+    if (document.fullscreenElement) {
+      const map = document.getElementById('map')
+      if (map) {
+        const windowHeight = window.innerHeight;
+        map.style.width = '100vw'
+        map.style.height = `${windowHeight}px`
+      }
+    }
+  }
 
   onMounted(async () => {
     me.value = new MindElixir({
@@ -71,7 +100,18 @@
       theme: Sunset
     })
 
-    me.value.mindElixirBox.requestFullscreen()
+    me.value.bus.addListener('selectNode', (node: any) => {
+      description.value = ''
+      if (isCtrlPressed) {
+        description.value = node.description
+      }
+    })
+
+    document.documentElement.requestFullscreen()
+    updateCanvasSize()
+    window.addEventListener('resize', updateCanvasSize)
+    setInterval(updateCanvasSize, 100)
+
     me.value.toCenter()
 
     const data = MindElixir.new('New Topic')
@@ -99,10 +139,8 @@
 
 <style>
   :root {
-    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+    font-size: 15px;
 
     color: #0f0f0f;
     background-color: #f6f6f6;
@@ -114,14 +152,34 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  body {
+    margin: 0;
+  }
+
   .container {
     margin: 0;
   }
 
   #map {
-    background-color: cyan;
+    margin: 0;
     height: 1000px;
     width: 100%;
+  }
+
+  .description {
+    position: fixed !important;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(245, 245, 245, 0.95);
+    color: black;
+    padding: 20px 20px;
+    font-size: 18px;
+    border-radius: 10px;
+    max-width: 80%;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999 !important;
   }
 
   @media (prefers-color-scheme: dark) {
