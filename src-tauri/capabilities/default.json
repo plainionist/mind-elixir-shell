@@ -10,6 +10,7 @@
     "fs:default",
     "fs:allow-app-write",
     "fs:allow-home-write",
+    "fs:allow-watch",
     "core:window:allow-destroy"
   ]
 }

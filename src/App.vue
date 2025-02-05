@@ -8,21 +8,36 @@
   import MindElixir from 'mind-elixir'
   import { onMounted, onUnmounted, ref } from 'vue'
   import { open, save } from '@tauri-apps/plugin-dialog'
-  import { writeTextFile, readTextFile } from '@tauri-apps/plugin-fs'
+  import { writeTextFile, readTextFile, watchImmediate } from '@tauri-apps/plugin-fs'
   import { listen } from '@tauri-apps/api/event'
   import { getCurrentWindow } from '@tauri-apps/api/window'
   import { homeDir, join } from '@tauri-apps/api/path'
   import { Sunset } from './themes'
 
   const me = ref()
+  let watchedFile = ref<string | null>(null)
+  let unwatch: (() => void) | null = null
+
+  const loadFile = async (filePath: string) => {
+    const contents = await readTextFile(filePath)
+    me.value.init(JSON.parse(contents))
+  }
 
   const openFile = async () => {
     const filePath = await open({
       filters: [{ name: 'JSON Files', extensions: ['json'] }]
     })
     if (filePath) {
-      const contents = await readTextFile(filePath as string)
-      me.value.init(JSON.parse(contents))
+      watchedFile.value = filePath as string
+      await loadFile(watchedFile.value)
+
+      if (unwatch) {
+        unwatch()
+      }
+
+      unwatch = await watchImmediate(watchedFile.value, async () => {
+        await loadFile(watchedFile.value as string)
+      })
     }
   }
 
@@ -64,7 +79,7 @@
 
     unlisten = await getCurrentWindow().onCloseRequested(async () => {
       const home = await homeDir()
-      const filePath = await join(home, 'mind-elixir.json');
+      const filePath = await join(home, 'mind-elixir.json')
       const data = me.value.getDataString()
       await writeTextFile(filePath, data)
     })
@@ -76,6 +91,9 @@
 
   onUnmounted(() => {
     unlisten()
+    if (unwatch) {
+      unwatch()
+    }
   })
 </script>
 
