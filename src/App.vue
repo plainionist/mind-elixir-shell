@@ -1,13 +1,13 @@
 <template>
   <main class="container">
     <div id="map"></div>
-    <DescriptionBox :description="description" />
+    <DescriptionBox ref="descriptionBox" :description="description" />
   </main>
 </template>
 
 <script setup lang="ts">
   import MindElixir, { MindElixirInstance } from 'mind-elixir'
-  import { onMounted, onUnmounted, ref } from 'vue'
+  import { ComponentPublicInstance, onMounted, onUnmounted, ref } from 'vue'
   import { open, save } from '@tauri-apps/plugin-dialog'
   import { writeTextFile, readTextFile, watchImmediate } from '@tauri-apps/plugin-fs'
   import { listen } from '@tauri-apps/api/event'
@@ -17,11 +17,12 @@
   import DescriptionBox from './components/DescriptionBox.vue'
   import { useDescription } from './composables/useDescription'
 
-  const me = ref<MindElixirInstance | null>()
+  const me = ref<MindElixirInstance | null>(null)
   let watchedFile = ref<string | null>(null)
   let unwatch: (() => void) | null = null
 
-  const { description, attachDescriptionListeners } = useDescription()
+  const descriptionBox = ref<ComponentPublicInstance | null>(null)
+  const { description, attachDescriptionListeners } = useDescription(descriptionBox)
 
   const loadFile = async (filePath: string) => {
     const contents = await readTextFile(filePath)

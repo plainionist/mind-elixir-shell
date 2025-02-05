@@ -1,11 +1,16 @@
 <template>
-  <div v-show="description" id="description" class="description">
+  <div v-show="description" ref="descriptionBox" class="description">
     {{ description }}
   </div>
 </template>
 
 <script setup lang="ts">
-  defineProps<{ description: string }>()
+  import { ref } from 'vue'
+
+  defineProps<{ description: string | undefined }>()
+
+  const descriptionBox = ref<HTMLElement | null>(null)
+  defineExpose({ descriptionBox })
 </script>
 
 <style scoped>

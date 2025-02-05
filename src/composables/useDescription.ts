@@ -1,7 +1,7 @@
-import { ref } from 'vue'
+import { ComponentPublicInstance, Ref, ref } from 'vue'
 import { MindElixirInstance } from 'mind-elixir'
 
-export function useDescription() {
+export function useDescription(descriptionBox: Ref<ComponentPublicInstance | null>) {
   const description = ref('')
   let scale = 1.0
   let isCtrlPressed = false
@@ -31,9 +31,8 @@ export function useDescription() {
 
       description.value = node.description
 
-      const descriptionBox = document.getElementById('description')
-      if (descriptionBox) {
-        descriptionBox.style.fontSize = `${15 * scale}px`
+      if (descriptionBox.value) {
+        descriptionBox.value.$el.style.fontSize = `${15 * scale}px`
       }
     })
   }
