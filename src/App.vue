@@ -68,20 +68,6 @@
     }
   }
 
-  let isCtrlPressed = false
-
-  document.addEventListener('keydown', function (event) {
-    if (event.ctrlKey) {
-      isCtrlPressed = true
-    }
-  })
-
-  document.addEventListener('keyup', function (event) {
-    if (!event.ctrlKey) {
-      isCtrlPressed = false
-    }
-  })
-
   let unlisten = () => {}
 
   const updateCanvasSize = () => {
