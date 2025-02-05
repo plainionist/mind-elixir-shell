@@ -11,11 +11,11 @@
   import { open, save } from '@tauri-apps/plugin-dialog'
   import { writeTextFile, readTextFile, watchImmediate } from '@tauri-apps/plugin-fs'
   import { listen } from '@tauri-apps/api/event'
-  import { getCurrentWindow } from '@tauri-apps/api/window'
-  import { homeDir, join } from '@tauri-apps/api/path'
   import { Sunset } from './themes'
   import DescriptionBox from './components/DescriptionBox.vue'
   import { useDescription } from './composables/useDescription'
+  import { useSaveOnClose } from './composables/useSaveOnClose'
+
 
   const me = ref<MindElixirInstance | null>(null)
   let watchedFile = ref<string | null>(null)
@@ -68,8 +68,6 @@
     }
   }
 
-  let unlisten = () => {}
-
   const updateCanvasSize = () => {
     if (document.fullscreenElement) {
       const map = document.getElementById('map')
@@ -89,6 +87,7 @@
     })
 
     attachDescriptionListeners(me.value)
+    useSaveOnClose(me.value)
 
     document.documentElement.requestFullscreen()
     updateCanvasSize()
@@ -100,20 +99,12 @@
     const data = MindElixir.new('New Topic')
     me.value.init(data)
 
-    unlisten = await getCurrentWindow().onCloseRequested(async () => {
-      const home = await homeDir()
-      const filePath = await join(home, 'mind-elixir.json')
-      const data = me.value?.getDataString()
-      await writeTextFile(filePath, data!)
-    })
-
     listen('menu:open', openFile)
     listen('menu:save', saveFile)
     listen('menu:export-svg', exportSvg)
   })
 
   onUnmounted(() => {
-    unlisten()
     if (unwatch) {
       unwatch()
     }
