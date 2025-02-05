@@ -19,11 +19,13 @@
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(245, 245, 245, 0.95);
+    background: rgb(255, 255, 255);
+    border: solid 2px black;
     color: black;
     padding: 20px 20px;
     font-size: 18px;
     border-radius: 10px;
+    white-space: nowrap;
     max-width: 80%;
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
