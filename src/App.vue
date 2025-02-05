@@ -1,7 +1,7 @@
 <template>
   <main class="container">
     <div id="map"></div>
-    <div v-if="description" class="description">
+    <div v-show="description" id="description" class="description">
       {{ description }}
     </div>
   </main>
@@ -86,12 +86,14 @@
     if (document.fullscreenElement) {
       const map = document.getElementById('map')
       if (map) {
-        const windowHeight = window.innerHeight;
+        const windowHeight = window.innerHeight
         map.style.width = '100vw'
         map.style.height = `${windowHeight}px`
       }
     }
   }
+
+  let scale = 1.0
 
   onMounted(async () => {
     me.value = new MindElixir({
@@ -100,10 +102,21 @@
       theme: Sunset
     })
 
+    me.value.bus.addListener('scale', (value: any) => {
+      scale = value > 1.0 ? value : 1.0
+    })
+
     me.value.bus.addListener('selectNode', (node: any) => {
       description.value = ''
-      if (isCtrlPressed) {
-        description.value = node.description
+      if (!isCtrlPressed) {
+        return
+      }
+
+      description.value = node.description
+
+      const descriptionBox = document.getElementById('description')
+      if (descriptionBox) {
+        descriptionBox.style.fontSize = `${15 * scale}px`
       }
     })
 
@@ -139,7 +152,8 @@
 
 <style>
   :root {
-    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC,
+      WenQuanYi Micro Hei, sans-serif;
     font-size: 15px;
 
     color: #0f0f0f;
