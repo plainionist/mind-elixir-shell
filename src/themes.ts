@@ -22,7 +22,7 @@ export const Sunset: Theme = {
     '--color': '#cccccc',
     '--bgcolor': '#252526',
     '--panel-color': '255, 255, 255',
-    '--panel-bgcolor': '45, 55, 72'
+    '--panel-bgcolor': '#cccccc'
   }
 }
 
@@ -35,6 +35,6 @@ export const Sunrise: Theme = {
     '--color': '#cccccc',
     '--bgcolor': '#252526',
     '--panel-color': '255, 255, 255',
-    '--panel-bgcolor': '45, 55, 72'
+    '--panel-bgcolor': '#cccccc'
   }
 }
